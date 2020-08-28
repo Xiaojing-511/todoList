@@ -1,0 +1,64 @@
+.index{
+  padding: 5px 15px;
+}
+.inputView,
+.todoList {
+  /* display: flex; */
+  /* height: 37px; */
+  /* line-height: 37px; */
+}
+.todoList{
+  padding-bottom: 10px;
+  z-index: 5;
+}
+.swapper{
+  display: flex;
+  position: relative;
+  /* border: 1px solid #000; */
+}
+.inner{
+  position: absolute;
+  right: 0;
+  z-index: 3;
+}
+.ipt {
+  flex: 4;
+  height: 37px;
+  line-height: 37px;
+  /* border: 1px solid #000; */
+}
+
+.item {
+  flex: 6;
+  text-align: center;
+}
+
+.control-text {
+  margin-right: 5px;
+}
+
+.switchShow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.imgAdd{
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  /* float: right; */
+}
+.imgAdd-item{
+  /* border: 1px solid #000; */
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+}
+.imgDel{
+  width: 24px;
+  height: 24px;
+  /* margin-top: 8px; */
+}
+

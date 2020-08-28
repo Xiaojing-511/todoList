@@ -1,0 +1,41 @@
+<view class="index">
+	<!-- <view class="switchShow">
+		<text>显示已完成事项</text>
+		<switch bindchange="showChangeList"></switch>
+	</view> -->
+
+	<!-- <view class="todoList">
+		<view class="index">序号</view>
+		<view class="item">事项</view>
+		<view class="control control-text">操作</view>
+	</view> -->
+
+	<checkbox-group bindchange="getMoreChange">
+		<!-- 单击事件由touchstart、touchend组成,touchend后触发tap事件 -->
+		<view class="todoList" wx:for="{{todoList}}" wx:key="_id" bindtouchstart="myTouchStart" bindtouchmove="myTouchMove" bindtouchend="myTouchEnd">
+			<view class="swapper" >
+				<!-- <view class="index">{{index+1}}</view> -->
+				<checkbox value="{{item._id}}" class="check" color="#d81e06"></checkbox>
+				<view class="item">{{item.title}}</view>
+				<view class="inner del">
+					<image class="imgDel" src="../../images/del.png"></image>
+				</view>
+			</view>
+			<!-- 注  不在data中的数据不能直接写{{_id}} -->
+			<!-- <button data-type="{{btnType}}" data-id="{{item._id}}" bindtap="addIsDone" class="control" type="{{btnType}}" size="mini">{{btnText}}</button> -->
+		</view>
+
+		<view class="inputView" hidden="{{isHidden}}">
+			<input value="{{iptVal}}" bindinput="getIptVal" class="ipt" placeholder="请输入需要添加的事项"></input>
+			<image src="../../images/add_item.png" bindtap="add" class="imgAdd-item "></image>
+			<!-- <button  type="primary" size="mini">添加</button> -->
+		</view>
+
+		<view bindtap="imgAdd">
+			<image class="imgAdd" src="../../images/add.png"></image>
+		</view>
+
+		<!-- <button bindtap="moreChange" data-type="{{btnType}}" type="{{btnType}}">{{btnMoreText}}</button> -->
+
+	</checkbox-group>
+</view>

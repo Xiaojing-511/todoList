@@ -1,0 +1,42 @@
+{
+  "entryPagePath": "pages/index/index",
+  "pages": [
+    "pages/index/index",
+    "pages/tabSave/tabSave",
+    "pages/tabMe/tabMe"
+  ],
+  "window": {
+    "backgroundColor": "#F6F6F6",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#F6F6F6",
+    "navigationBarTitleText": "今日便签",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#000000",
+    "selectedColor": "#d81e06",
+    "backgroundColor": "#F6F6F6",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/tabSave/tabSave",
+        "text": "记录",
+        "iconPath": "./images/note.png",
+        "selectedIconPath": "./images/note_one.png"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "今日",
+        "iconPath": "./images/finish.png",
+        "selectedIconPath": "./images/finish_one.png"
+      },
+      {
+        "pagePath": "pages/tabMe/tabMe",
+        "text": "我的",
+        "iconPath": "./images/my.png",
+        "selectedIconPath": "./images/my_one.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

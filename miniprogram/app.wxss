@@ -1,0 +1,12 @@
+/* 重写 checkbox 样式 */
+checkbox .wx-checkbox-input {
+  border-radius: 50%;
+  width: 46rpx;
+  height: 46rpx;
+}
+
+/* 选中后的 背景样式  */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+  border: 1rpx solid white;
+  /* background: #FF783B; */
+}
