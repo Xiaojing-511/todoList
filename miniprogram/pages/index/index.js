@@ -18,7 +18,9 @@ Page({
     btnType: "primary",
     btnText: "完成",
     moreChangeList: [],
-    btnMoreText: "批量完成"
+    btnMoreText: "批量完成",
+    delIsHidden: false,
+    x: 0
   },
   // 获取输入框内数据
   getIptVal(e) {
@@ -35,8 +37,9 @@ Page({
     todoListDb.add({
       data: {
         title: this.data.iptVal,
-        // isToDo: true,
+        isToDo: true,
         isDone: false,
+        
       },
     }).then(res => {
       // 显示list
@@ -51,7 +54,8 @@ Page({
   // 显示待完成（isDone = false） 页面
   showToDoList() {
     todoListDb.where({
-        isDone: false,
+      isToDo: true,
+        // isDone: false,
       }).get()
       .then(res => {
         this.setData({
@@ -65,93 +69,171 @@ Page({
       })
   },
   // 显示已完成（isDone = true)页面
-  showIsDoneList() {
-    todoListDb.where({
-        isDone: true,
-      }).get()
-      .then(res => {
-        this.setData({
-          todoList: res.data,
-          btnType: "warn",
-          btnText: "删除",
-          btnMoreText: "批量删除"
-        })
-      })
-  },
+  // showIsDoneList() {
+  //   todoListDb.where({
+  //       isDone: true,
+  //     }).get()
+  //     .then(res => {
+  //       this.setData({
+  //         todoList: res.data,
+  //         btnType: "warn",
+  //         btnText: "删除",
+  //         btnMoreText: "批量删除"
+  //       })
+  //     })
+  // },
   // 点击小按钮完成/删除
-  addIsDone(e) {
-    // 点击完成  修改该条记录的isDone为true
-    if (e.target.dataset.type == "primary") {
-      todoListDb.doc(e.target.dataset.id).update({
-        data: {
-          isDone: true,
-        }
-      }).then(res => {
-        // 显示列表
-        this.showToDoList();
-      })
-    } else { //点击删除 删除该条记录
-      todoListDb.doc(e.target.dataset.id).remove()
-        .then(res => {
-          // 显示列表
-          this.showIsDoneList();
-        })
-    }
-  },
+  // addIsDone(e) {
+  //   // 点击完成  修改该条记录的isDone为true
+  //   if (e.target.dataset.type == "primary") {
+  //     todoListDb.doc(e.target.dataset.id).update({
+  //       data: {
+  //         isDone: true,
+  //       }
+  //     }).then(res => {
+  //       // 显示列表
+  //       this.showToDoList();
+  //     })
+  //   } else { //点击删除 删除该条记录
+  //     todoListDb.doc(e.target.dataset.id).remove()
+  //       .then(res => {
+  //         // 显示列表
+  //         this.showIsDoneList();
+  //       })
+  //   }
+  // },
 
   // 点击开关选择器switch 切换显示列表
-  showChangeList(e) {
-    if (e.detail.value) {
-      this.showIsDoneList();
-    } else {
-      this.showToDoList();
-    }
-  },
+  // showChangeList(e) {
+  //   if (e.detail.value) {
+  //     this.showIsDoneList();
+  //   } else {
+  //     this.showToDoList();
+  //   }
+  // },
 
   // 获取需要批量操作的id
-  getMoreChange(e) {
-    this.data.moreChangeList = e.detail.value;
-  },
+  // getMoreChange(e) {
+  //   this.data.moreChangeList = e.detail.value;
+  // },
 
   // 批量操作
-  moreChange(e) {
-    let fnName = e.target.dataset.type == 'primary' ? 'finish' : 'delete';
-    wx.cloud.callFunction({
-      name: fnName,
-      data: {
-        idList: this.data.moreChangeList,
-      },
-      complete: res => {
-        if (fnName == 'finish') {
-          this.showToDoList();
-        } else {
-          this.showIsDoneList();
-        }
-      },
-    })
+  // moreChange(e) {
+  //   let fnName = e.target.dataset.type == 'primary' ? 'finish' : 'delete';
+  //   wx.cloud.callFunction({
+  //     name: fnName,
+  //     data: {
+  //       idList: this.data.moreChangeList,
+  //     },
+  //     complete: res => {
+  //       if (fnName == 'finish') {
+  //         this.showToDoList();
+  //       } else {
+  //         this.showIsDoneList();
+  //       }
+  //     },
+  //   })
+  // },
 
+  imgDel() {
+    this.setData({
+      delIsHidden: !this.data.delIsHidden
+    })
   },
+  delete(e) {
+    
+    todoListDb.doc(e.currentTarget.dataset.id).remove()
+      .then(res => {
+        // 显示列表
+        // console.log(res);
+        todoListDb.where({
+            isDone: false
+          }).get()
+          .then(res => {
+            this.setData({
+              todoList: res.data
+            })
+          })
+      })
+  },
+  // getMoreChange(e) {
+  //   // this.data.todoList.forEach(obj => {
+  //   //   todoListDb.doc(obj._id).update({
+  //   //     data:{
+  //   //       isDone: false,
+  //   //     }
+  //   //   })
+  //   // })
+
+  //   e.detail.value.forEach(id => {
+  //     todoListDb.doc(id).update({
+  //       data:{
+  //         isDone: true,
+  //       }
+  //     })
+  //   })
+  //   todoListDb.where({
+      
+  //   })
+  //   todoListDb.where({
+  //       isDone: true
+  //     }).get()
+  //     .then(res => {
+  //       console.log(res)
+  //       // this.setData({
+  //       //   todoList: res.data
+  //       // })
+  //     })
+  //   },
+      
+    
+  changeIsDone(e){
+    // console.log(e);
+    
+    todoListDb.doc(e.currentTarget.dataset.id).update({
+      data: {
+        isDone: !this.data.isDone,
+      }
+    })
+    // console.log(this.data.isDone);
+    
+    todoListDb.where({
+      isDone: true
+    }).get()
+    .then(res=>{
+      console.log(res);
+      
+      // this.setData({
+      //   todoList: res.data
+      // })
+    })
+    },
+
+
 
   // 左滑显示删除键
   myTouchStart(e) {
     startX = e.touches[0].pageX;
+    console.log(startX);
+    
     moveFlag = true;
   },
-  myTouchMove(e) {
-    // console.log("滑动时： "+e);
-    endX = e.touches[0].pageX;
-    if (moveFlag) {
-      if (startX - endX > 50) {
-        console.log("move left");
-        // this.move2left();
-        moveFlag = false;
-      }
-    }
-  },
-  myTouchEnd(e) {
-    // console.log();
-    moveFlag = true;
-  },
+  // myTouchMove(e) {
+  //   console.log(e);
+  //   endX = e.touches[0].pageX;
+  //   if (moveFlag) {
+  //     if (startX - endX > 27) {
+  //       console.log("move left");
+  //       // this.move2left();
+  //       moveFlag = false;
+  //     }
+  //   }
+  // },
+  // myTouchEnd(e) {
+  //   // console.log(e);
+  //   this.opacity = 1
+  //   moveFlag = true;
+  // },
   /**
    * 生命周期函数--监听页面加载
    */
