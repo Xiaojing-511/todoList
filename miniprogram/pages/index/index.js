@@ -4,6 +4,7 @@ const todoListDb = db.collection('todoList');
 const _ = db.command;
 let startX = 0;
 let endX = 0;
+let disX = 0
 let moveFlag = true; //可实施滑动事件
 Page({
 
@@ -14,32 +15,36 @@ Page({
     iptVal: '',
     todoList: [],
     isHidden: true,
-    isDone: false,
+    // isDone: false,
     btnType: "primary",
     btnText: "完成",
-    moreChangeList: [],
-    btnMoreText: "批量完成",
-    delIsHidden: false,
-    x: 0
+    // moreChangeList: [],
+    // btnMoreText: "批量完成",
+    // delIsHidden: false,
+    // x: 0
   },
+
   // 获取输入框内数据
   getIptVal(e) {
     this.data.iptVal = e.detail.value;
   },
+
   // 点击添加图标显示输入框
   imgAdd() {
     this.setData({
       isHidden: !this.data.isHidden
     })
   },
-  // 点击输入框右侧得添加按钮 将数据添加到数据库中
+
+  // 添加数据（点击输入框右侧得添加按钮 将数据添加到数据库中）
   add() {
     todoListDb.add({
       data: {
         title: this.data.iptVal,
         isToDo: true,
         isDone: false,
-        
+        right: 0
+
       },
     }).then(res => {
       // 显示list
@@ -51,10 +56,10 @@ Page({
       })
     })
   },
-  // 显示待完成（isDone = false） 页面
+  // 显示页面
   showToDoList() {
     todoListDb.where({
-      isToDo: true,
+        isToDo: true,
         // isDone: false,
       }).get()
       .then(res => {
@@ -68,6 +73,134 @@ Page({
         console.log(err);
       })
   },
+
+  imgDel() {
+    this.setData({
+      delIsHidden: !this.data.delIsHidden
+    })
+  },
+  // 删除
+  delete(e) {
+    todoListDb.doc(e.currentTarget.dataset.id).remove()
+      .then(res => {
+        // 显示列表
+        // console.log(res);
+        todoListDb.where({
+            isToDo: true
+          }).get()
+          .then(res => {
+            this.setData({
+              todoList: res.data
+            })
+          })
+      })
+    },
+
+    // 切换完成/未完成
+    changeIsDone(e) {
+    // console.log(e);
+    let item = this.data.todoList[e.currentTarget.dataset.index]
+    console.log(item.isDone);
+    
+    todoListDb.doc(e.currentTarget.dataset.id).update({
+      data: {
+        isDone: !item.isDone,
+      }
+    })
+    console.log(this.data);
+
+    todoListDb.where({
+        isDone: true
+      }).get()
+      .then(res => {
+        // console.log(res);
+
+        // this.setData({
+        //   todoList: res.data
+        // })
+      })
+  },
+  
+  // 左滑显示删除键
+  myTouchStart(e) {
+    startX = e.touches[0].pageX;
+    // console.log(e);
+    moveFlag = true;
+  },
+  myTouchMove(e) {
+    // console.log(e);
+    // console.log(this);
+    // console.log(e.currentTarget.dataset.index);
+    // console.log(e.touches[0].clientX,e.touches[0].pageX);
+    let item = this.data.todoList[e.currentTarget.dataset.index]
+    endX = e.touches[0].pageX;
+    disX = startX - endX
+    if (moveFlag) {
+      item.right = disX
+      this.setData({
+        todoList: this.data.todoList
+      })
+      if (disX > 70) {
+        console.log("move left");
+        // this.move2left();
+        moveFlag = false;
+      }else if(disX <=0){
+        console.log("nono");
+        moveFlag = false
+        
+      }
+    }
+  },
+  myTouchEnd(e) {
+    moveFlag = true;
+    let item = this.data.todoList[e.currentTarget.dataset.index]
+
+    if (item.right >= 35) {
+      item.right = 70
+      this.setData({
+        todoList: this.data.todoList,
+      })
+    } else {
+      item.right = 0
+      console.log(item.right);
+      this.setData({
+        todoList: this.data.todoList
+      })
+    }
+  },
+
+
+  // 批量操作
+  // getMoreChange(e) {
+  //   // this.data.todoList.forEach(obj => {
+  //   //   todoListDb.doc(obj._id).update({
+  //   //     data:{
+  //   //       isDone: false,
+  //   //     }
+  //   //   })
+  //   // })
+
+  //   e.detail.value.forEach(id => {
+  //     todoListDb.doc(id).update({
+  //       data:{
+  //         isDone: true,
+  //       }
+  //     })
+  //   })
+  //   todoListDb.where({
+
+  //   })
+  //   todoListDb.where({
+  //       isDone: true
+  //     }).get()
+  //     .then(res => {
+  //       console.log(res)
+  //       // this.setData({
+  //       //   todoList: res.data
+  //       // })
+  //     })
+  //   },
+
   // 显示已完成（isDone = true)页面
   // showIsDoneList() {
   //   todoListDb.where({
@@ -135,105 +268,6 @@ Page({
   //   })
   // },
 
-  imgDel() {
-    this.setData({
-      delIsHidden: !this.data.delIsHidden
-    })
-  },
-  delete(e) {
-    
-    todoListDb.doc(e.currentTarget.dataset.id).remove()
-      .then(res => {
-        // 显示列表
-        // console.log(res);
-        todoListDb.where({
-            isDone: false
-          }).get()
-          .then(res => {
-            this.setData({
-              todoList: res.data
-            })
-          })
-      })
-  },
-  // getMoreChange(e) {
-  //   // this.data.todoList.forEach(obj => {
-  //   //   todoListDb.doc(obj._id).update({
-  //   //     data:{
-  //   //       isDone: false,
-  //   //     }
-  //   //   })
-  //   // })
-
-  //   e.detail.value.forEach(id => {
-  //     todoListDb.doc(id).update({
-  //       data:{
-  //         isDone: true,
-  //       }
-  //     })
-  //   })
-  //   todoListDb.where({
-      
-  //   })
-  //   todoListDb.where({
-  //       isDone: true
-  //     }).get()
-  //     .then(res => {
-  //       console.log(res)
-  //       // this.setData({
-  //       //   todoList: res.data
-  //       // })
-  //     })
-  //   },
-      
-    
-  changeIsDone(e){
-    // console.log(e);
-    
-    todoListDb.doc(e.currentTarget.dataset.id).update({
-      data: {
-        isDone: !this.data.isDone,
-      }
-    })
-    // console.log(this.data.isDone);
-    
-    todoListDb.where({
-      isDone: true
-    }).get()
-    .then(res=>{
-      console.log(res);
-      
-      // this.setData({
-      //   todoList: res.data
-      // })
-    })
-    },
-
-
-
-  // 左滑显示删除键
-  myTouchStart(e) {
-    startX = e.touches[0].pageX;
-    console.log(startX);
-    
-    moveFlag = true;
-  },
-  // myTouchMove(e) {
-  //   console.log(e);
-  //   endX = e.touches[0].pageX;
-  //   if (moveFlag) {
-  //     if (startX - endX > 27) {
-  //       console.log("move left");
-  //       // this.move2left();
-  //       moveFlag = false;
-  //     }
-  //   }
-  // },
-  // myTouchEnd(e) {
-  //   // console.log(e);
-  //   this.opacity = 1
-  //   moveFlag = true;
-  // },
   /**
    * 生命周期函数--监听页面加载
    */

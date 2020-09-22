@@ -13,20 +13,17 @@
 	<checkbox-group>
 		<!-- 单击事件由touchstart、touchend组成,touchend后触发tap事件 -->
 		<view class="todoList" wx:for="{{todoList}}" wx:key="_id">
-		<view class="container">
 
-			<view class="swapper" touchstart="myTouchStart" touchmove="myTouchMove" touchend="myTouchEnd" >
+			<view class="swapper" bindtouchstart="myTouchStart" bindtouchmove="myTouchMove" bindtouchend="myTouchEnd" style="right:{{item.right}}rpx" data-index="{{index}}">
 
 				<!-- <view class="index">{{index+1}}</view> -->
-				<view bindtap="changeIsDone" data-id="{{item._id}}">
+				<view catchtap="changeIsDone" data-id="{{item._id}}" data-index="{{index}}">
 					<checkbox value="{{item._id}}" color="#d81e06"></checkbox>
 				</view>
 				<view class="item">{{item.title}}</view>
-				<view class="inner" hidden="{{delIsHidden}}" data-id="{{item._id}}" bindtap="delete">
+				<view class="inner" hidden="{{delIsHidden}}" data-id="{{item._id}}" bindtap="delete" data-index="{{index}}">
 					<image class="imgDel" src="../../images/del.png"></image>
 				</view>
-
-			</view>
 
 		</view>
 			<!-- 注  不在data中的数据不能直接写{{_id}} -->
@@ -39,9 +36,9 @@
 			<!-- <button  type="primary" size="mini">添加</button> -->
 		</view>
 
-		<view bindtap="imgDel">
+		<!-- <view bindtap="imgDel">
 			<image class="imgDel delFlag" src="../../images/del.png"></image>
-		</view>
+		</view> -->
 		<view bindtap="imgAdd">
 			<image class="imgAdd" src="../../images/add.png"></image>
 		</view>
