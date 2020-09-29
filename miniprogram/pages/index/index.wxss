@@ -1,5 +1,17 @@
+/* .index-container{
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  bottom: 0;
+  border-bottom: 5px solid #000;
+} */
+
+
 .index {
+  /* width: 100%; */
+  /* height: 2000rpx; */
   padding: 15px 15px;
+  /* overflow-x: hidden; */
 }
 
 .todoList {
@@ -16,7 +28,7 @@
 }
 .swapper {
   width: 100%;
-  height: 60rpx;
+  /* height: 60rpx; */
   display: flex;
   position: relative;
   /* right: 10rpx; */
@@ -87,8 +99,15 @@
 
 
 .imgAdd-item {
-  /* border: 1px solid #000; */
+  /* border: 1px solid #fff; */
   width: 30px;
   height: 30px;
   margin-top: 2px;
+  margin-left: 15px;
 }
+/* ::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+background-color: red;
+  color: transparent;
+} */

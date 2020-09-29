@@ -10,3 +10,10 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked {
   border: 1rpx solid white;
   /* background: #FF783B; */
 }
+
+/* ::-webkit-scrollbar {
+  display:none;
+  width:0;
+  height:0;
+  color:transparent;
+} */

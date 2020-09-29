@@ -2,26 +2,21 @@
 const db = wx.cloud.database();
 const todoListDb = db.collection('todoList');
 const _ = db.command;
+let userId
 let startX = 0;
 let endX = 0;
 let disX = 0
 let moveFlag = true; //可实施滑动事件
 Page({
-
   /**
    * 页面的初始数据
    */
   data: {
     iptVal: '',
     todoList: [],
+    // 控制新建事项输入框的显隐
     isHidden: true,
-    // isDone: false,
-    btnType: "primary",
-    btnText: "完成",
     // moreChangeList: [],
-    // btnMoreText: "批量完成",
-    // delIsHidden: false,
-    // x: 0
   },
 
   // 获取输入框内数据
@@ -36,7 +31,7 @@ Page({
     })
   },
 
-  // 添加数据（点击输入框右侧得添加按钮 将数据添加到数据库中）
+  // 添加数据（点击输入框右侧的添加按钮 将数据添加到数据库中）
   add() {
     todoListDb.add({
       data: {
@@ -44,84 +39,56 @@ Page({
         isToDo: true,
         isDone: false,
         right: 0
-
       },
     }).then(res => {
       // 显示list
       this.showToDoList();
-      // 清空输入框
+      // 清空输入框并隐藏
       this.setData({
         iptVal: '',
         isHidden: true
       })
     })
   },
-  // 显示页面
+  // 显示页面 刷新todoList
   showToDoList() {
     todoListDb.where({
         isToDo: true,
+        _openid: userId,
         // isDone: false,
       }).get()
       .then(res => {
         this.setData({
           todoList: res.data,
-          btnType: "primary",
-          btnText: "完成",
-          btnMoreText: "批量完成"
         })
       }).catch(err => {
         console.log(err);
       })
   },
 
-  imgDel() {
-    this.setData({
-      delIsHidden: !this.data.delIsHidden
-    })
-  },
-  // 删除
-  delete(e) {
-    todoListDb.doc(e.currentTarget.dataset.id).remove()
+  // 切换完成/未完成
+  changeIsDone(e) {
+    let tempIsDone
+    todoListDb.doc(e.currentTarget.dataset.id).get()
       .then(res => {
-        // 显示列表
-        // console.log(res);
-        todoListDb.where({
-            isToDo: true
-          }).get()
-          .then(res => {
-            this.setData({
-              todoList: res.data
-            })
-          })
+        tempIsDone = res.data.isDone;
+        // console.log(tempIsDone);
       })
-    },
 
-    // 切换完成/未完成
-    changeIsDone(e) {
-    // console.log(e);
-    let item = this.data.todoList[e.currentTarget.dataset.index]
-    console.log(item.isDone);
-    
+    // 遇到问题：无法更新数据库的数据 解决： 设置数据库权限为全体可读
     todoListDb.doc(e.currentTarget.dataset.id).update({
       data: {
-        isDone: !item.isDone,
+        isDone: !tempIsDone,
+      },
+      success: function (res) {
+        // console.log(res)
+        this.showToDoList()
       }
+
     })
-    console.log(this.data);
-
-    todoListDb.where({
-        isDone: true
-      }).get()
-      .then(res => {
-        // console.log(res);
-
-        // this.setData({
-        //   todoList: res.data
-        // })
-      })
   },
-  
-  // 左滑显示删除键
+
+  // 左滑显示删除键 
   myTouchStart(e) {
     startX = e.touches[0].pageX;
     // console.log(e);
@@ -144,10 +111,10 @@ Page({
         console.log("move left");
         // this.move2left();
         moveFlag = false;
-      }else if(disX <=0){
+      } else if (disX <= 0) {
         console.log("nono");
         moveFlag = false
-        
+
       }
     }
   },
@@ -162,13 +129,28 @@ Page({
       })
     } else {
       item.right = 0
-      console.log(item.right);
       this.setData({
         todoList: this.data.todoList
       })
     }
   },
+  // 从数据库中删除
+  delete(e) {
+    todoListDb.doc(e.currentTarget.dataset.id).remove()
+      .then(res => {
+        // 显示列表
+        console.log(this.data);
 
+        this.showToDoList()
+      })
+  },
+
+  // 一键显示所有删除键
+  // imgDel() {
+  //   this.setData({
+  //     delIsHidden: !this.data.delIsHidden
+  //   })
+  // },
 
   // 批量操作
   // getMoreChange(e) {
@@ -272,8 +254,19 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.showToDoList();
+        wx.cloud.callFunction({
+          name: 'getUserid',
+          complete: res => {
+            userId = res.result.openid;
+          }
+        })
 
+        // 问题：首次进入时显示出数据库中所有数据 
+        // 原因：小程序的代码同步执行 导致未获取到openid时就showList 
+        // 解决：设置延时 
+        setTimeout(()=>{
+          this.showToDoList();
+        },2000)
   },
 
   /**
